@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет — G-Energy Оптовые поставки</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        .header { 
+            background: rgba(255,255,255,0.95); 
+            padding: 20px 30px; 
+            border-radius: 16px; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo h1 { color: #333; font-size: 24px; }
+        .logo p { color: #666; font-size: 14px; }
+        .user-info { text-align: right; }
+        .user-name { font-weight: 600; color: #333; }
+        .user-inn { color: #666; font-size: 13px; }
+        
+        /* Main Grid */
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 250px 1fr; 
+            gap: 20px;
+        }
+        
+        /* Sidebar Menu */
+        .sidebar { 
+            background: rgba(255,255,255,0.95); 
+            border-radius: 16px; 
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        .menu-item { 
+            padding: 12px 16px; 
+            border-radius: 8px; 
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu-item:hover { background: #f0f0f0; }
+        .menu-item.active { 
+            background: #667eea; 
+            color: white;
+        }
+        
+        /* Content Area */
+        .content { 
+            background: rgba(255,255,255,0.95); 
+            border-radius: 16px; 
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Section: Products */
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px;
+        }
+        .product-card { 
+            border: 2px solid #e9ecef; 
+            border-radius: 12px; 
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        .product-card:hover { 
+            border-color: #667eea; 
+            box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+        }
+        .product-image { 
+            width: 100%; 
+            height: 150px; 
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .product-name { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .product-specs { font-size: 13px; color: #666; margin-bottom: 12px; }
+        .product-price { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: #667eea; 
+            margin-bottom: 8px;
+        }
+        .product-stock { 
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .stock-available { background: #d4edda; color: #155724; }
+        .stock-low { background: #fff3cd; color: #856404; }
+        .stock-out { background: #f8d7da; color: #721c24; }
+        .product-actions { 
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        .btn { 
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd6; }
+        .btn-secondary { background: #e9ecef; color: #333; }
+        .btn-secondary:hover { background: #dee2e6; }
+        
+        /* Section: Orders History */
+        .orders-list { list-style: none; }
+        .order-item { 
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .order-header { 
+            display: flex; 
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .order-number { font-weight: 600; color: #333; }
+        .order-status { 
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-processing { background: #fff3cd; color: #856404; }
+        .status-shipped { background: #e8f0fe; color: #667eea; }
+        .order-details { 
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            font-size: 14px;
+        }
+        .order-detail-label { color: #666; font-size: 12px; }
+        .order-detail-value { font-weight: 600; color: #333; }
+        
+        /* Section: New Order */
+        .order-form { max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea { 
+            width: 100%; 
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .cart-item { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .cart-total { 
+            text-align: right;
+            padding: 20px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .cart-total-price { font-size: 28px; font-weight: 700; color: #667eea; }
+        
+        /* Chat Widget */
+        .chat-widget { 
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .chat-header { 
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-body { 
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .chat-message { 
+            margin-bottom: 12px;
+            max-width: 80%;
+        }
+        .chat-message.user { margin-left: auto; }
+        .chat-message.bot { margin-right: auto; }
+        .chat-bubble { 
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .chat-message.user .chat-bubble { 
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-message.bot .chat-bubble { 
+            background: #f0f0f0;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-input { 
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+        .chat-input input { 
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 8px;
+        }
+        
+        /* Login Screen */
+        .login-screen { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-box { 
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            width: 400px;
+            text-align: center;
+        }
+        .login-box h2 { margin-bottom: 10px; color: #333; }
+        .login-box p { color: #666; margin-bottom: 30px; }
+        .login-tabs { 
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .login-tab { 
+            flex: 1;
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .login-tab.active { 
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen (показывается если не авторизован) -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h2>🔐 Вход в личный кабинет</h2>
+            <p>G-Energy — Оптовые поставки моторных масел</p>
+            
+            <div class="login-tabs">
+                <div class="login-tab active" onclick="switchTab('phone')">📱 По телефону</div>
+                <div class="login-tab" onclick="switchTab('inn')">🏢 По ИНН</div>
+            </div>
+            
+            <div id="phoneForm">
+                <div class="form-group">
+                    <input type="tel" placeholder="+7 (999) 123-45-67" id="phoneInput">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="loginByPhone()">Получить код</button>
+            </div>
+            
+            <div id="innForm" style="display: none;">
+                <div class="form-group">
+                    <input type="text" placeholder="ИНН компании" id="innInput">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Пароль" id="passwordInput">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="loginByInn()">Войти</button>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 13px;">
+                Нет аккаунта? <a href="#" style="color: #667eea;">Зарегистрироваться</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main App (показывается после авторизации) -->
+    <div id="mainApp" class="container" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div style="font-size: 40px;">🛢️</div>
+                <div>
+                    <h1>G-Energy Опт</h1>
+                    <p>Официальный дистрибьютор моторных масел</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="userName">ООО "СтройТранс"</div>
+                <div class="user-inn" id="userInn">ИНН: 7701234567</div>
+            </div>
+        </div>
+        
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="menu-item active" onclick="showSection('products')">
+                    <span>📦</span> Каталог
+                </div>
+                <div class="menu-item" onclick="showSection('orders')">
+                    <span>📋</span> Мои заказы
+                </div>
+                <div class="menu-item" onclick="showSection('neworder')">
+                    <span>🛒</span> Новый заказ
+                </div>
+                <div class="menu-item" onclick="showSection('documents')">
+                    <span>📄</span> Документы
+                </div>
+                <div class="menu-item" onclick="showSection('support')">
+                    <span>💬</span> Поддержка
+                </div>
+                <div class="menu-item" onclick="logout()">
+                    <span>🚪</span> Выход
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="content" id="contentArea">
+                <!-- Products Section -->
+                <div id="productsSection">
+                    <h2 style="margin-bottom: 20px;">📦 Каталог продукции</h2>
+                    
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">🛢️</div>
+                            <div class="product-name">G-Energy Synthetic Active 5W-30</div>
+                            <div class="product-specs">Синтетическое • 205л бочка • API SN/CF</div>
+                            <div class="product-price">45 000 ₽</div>
+                            <span class="product-stock stock-available">✅ В наличии: 50 шт</span>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="addToCart(1)">В корзину</button>
+                                <button class="btn btn-secondary" onclick="askQuestion(1)">❓</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-image">🛢️</div>
+                            <div class="product-name">G-Energy Professional 10W-40</div>
+                            <div class="product-specs">Полусинтетическое • 205л бочка • API CI-4</div>
+                            <div class="product-price">38 000 ₽</div>
+                            <span class="product-stock stock-available">✅ В наличии: 32 шт</span>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="addToCart(2)">В корзину</button>
+                                <button class="btn btn-secondary" onclick="askQuestion(2)">❓</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-image">🛢️</div>
+                            <div class="product-name">G-Energy Truck 15W-40</div>
+                            <div class="product-specs">Минеральное • 205л бочка • API CH-4</div>
+                            <div class="product-price">32 000 ₽</div>
+                            <span class="product-stock stock-low">⚠️ Осталось: 8 шт</span>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="addToCart(3)">В корзину</button>
+                                <button class="btn btn-secondary" onclick="askQuestion(3)">❓</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card">
+                            <div class="product-image">🛢️</div>
+                            <div class="product-name">G-Energy Synthetic 5W-40</div>
+                            <div class="product-specs">Синтетическое • 205л бочка • API SN Plus</div>
+                            <div class="product-price">47 000 ₽</div>
+                            <span class="product-stock stock-available">✅ В наличии: 25 шт</span>
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="addToCart(4)">В корзину</button>
+                                <button class="btn btn-secondary" onclick="askQuestion(4)">❓</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Section -->
+                <div id="ordersSection" style="display: none;">
+                    <h2 style="margin-bottom: 20px;">📋 История заказов</h2>
+                    
+                    <ul class="orders-list">
+                        <li class="order-item">
+                            <div class="order-header">
+                                <span class="order-number">Заказ #2024-001245</span>
+                                <span class="order-status status-delivered">✅ Доставлен</span>
+                            </div>
+                            <div class="order-details">
+                                <div>
+                                    <div class="order-detail-label">Дата заказа</div>
+                                    <div class="order-detail-value">15.02.2024</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Сумма</div>
+                                    <div class="order-detail-value">180 000 ₽</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Позиций</div>
+                                    <div class="order-detail-value">4 товара</div>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="order-item">
+                            <div class="order-header">
+                                <span class="order-number">Заказ #2024-001289</span>
+                                <span class="order-status status-processing">⏳ В обработке</span>
+                            </div>
+                            <div class="order-details">
+                                <div>
+                                    <div class="order-detail-label">Дата заказа</div>
+                                    <div class="order-detail-value">20.02.2024</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Сумма</div>
+                                    <div class="order-detail-value">225 000 ₽</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Позиций</div>
+                                    <div class="order-detail-value">5 товаров</div>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="order-item">
+                            <div class="order-header">
+                                <span class="order-number">Заказ #2024-001198</span>
+                                <span class="order-status status-shipped">🚚 Отправлен</span>
+                            </div>
+                            <div class="order-details">
+                                <div>
+                                    <div class="order-detail-label">Дата заказа</div>
+                                    <div class="order-detail-value">10.02.2024</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Сумма</div>
+                                    <div class="order-detail-value">135 000 ₽</div>
+                                </div>
+                                <div>
+                                    <div class="order-detail-label">Трек-номер</div>
+                                    <div class="order-detail-value">CDEK-123456789</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- New Order Section -->
+                <div id="neworderSection" style="display: none;">
+                    <h2 style="margin-bottom: 20px;">🛒 Новый заказ</h2>
+                    
+                    <div class="order-form">
+                        <div class="form-group">
+                            <label>Товары в корзине:</label>
+                            <div id="cartItems">
+                                <div class="cart-item">
+                                    <div>
+                                        <strong>G-Energy Synthetic 5W-30</strong>
+                                        <div style="color: #666; font-size: 13px;">45 000 ₽ × 2 шт</div>
+                                    </div>
+                                    <div style="font-weight: 600;">90 000 ₽</div>
+                                </div>
+                                <div class="cart-item">
+                                    <div>
+                                        <strong>G-Energy Professional 10W-40</strong>
+                                        <div style="color: #666; font-size: 13px;">38 000 ₽ × 1 шт</div>
+                                    </div>
+                                    <div style="font-weight: 600;">38 000 ₽</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cart-total">
+                            <div style="color: #666; margin-bottom: 5px;">Итого к оплате:</div>
+                            <div class="cart-total-price">128 000 ₽</div>
+                            <div style="color: #666; font-size: 13px; margin-top: 5px;">Включая НДС 20%</div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Адрес доставки:</label>
+                            <textarea placeholder="г. Москва, ул. Строителей, д. 10, склад №3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Контактное лицо:</label>
+                            <input type="text" placeholder="Иванов Сергей Петрович" value="Иванов Сергей Петрович">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Телефон:</label>
+                            <input type="tel" placeholder="+7 (999) 123-45-67" value="+7 (999) 123-45-67">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Комментарий к заказу:</label>
+                            <textarea placeholder="Удобное время доставки, особые требования..."></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;" onclick="submitOrder()">
+                            ✅ Оформить заказ
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Documents Section -->
+                <div id="documentsSection" style="display: none;">
+                    <h2 style="margin-bottom: 20px;">📄 Документы</h2>
+                    <p style="color: #666;">Здесь будут отображаться ваши договоры, счета и акты.</p>
+                </div>
+                
+                <!-- Support Section -->
+                <div id="supportSection" style="display: none;">
+                    <h2 style="margin-bottom: 20px;">💬 Поддержка</h2>
+                    <p style="color: #666;">Напишите нам, и мы ответим в течение 15 минут.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget" style="display: none;">
+        <div class="chat-header">
+            <div>
+                <div style="font-weight: 600;">💬 Поддержка</div>
+                <div style="font-size: 12px; opacity: 0.9;">Обычно отвечаем за 5 минут</div>
+            </div>
+            <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-message bot">
+                <div class="chat-bubble">Здравствуйте! 👋 Я ваш персональный менеджер. Чем могу помочь?</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Напишите сообщение..." id="chatInput" onkeypress="if(event.key==='Enter') sendChatMessage()">
+            <button class="btn btn-primary" onclick="sendChatMessage()">➤</button>
+        </div>
+    </div>
+    
+    <!-- Chat Toggle Button -->
+    <button id="chatToggle" onclick="toggleChat()" style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: #667eea; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        💬
+    </button>
+    
+    <script>
+        // Auth functions
+        function switchTab(tab) {
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'phone') {
+                document.getElementById('phoneForm').style.display = 'block';
+                document.getElementById('innForm').style.display = 'none';
+            } else {
+                document.getElementById('phoneForm').style.display = 'none';
+                document.getElementById('innForm').style.display = 'block';
+            }
+        }
+        
+        function loginByPhone() {
+            // Demo login
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('chatWidget').style.display = 'block';
+        }
+        
+        function loginByInn() {
+            // Demo login
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('chatWidget').style.display = 'block';
+        }
+        
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('chatWidget').style.display = 'none';
+        }
+        
+        // Navigation
+        function showSection(section) {
+            // Hide all sections
+            document.getElementById('productsSection').style.display = 'none';
+            document.getElementById('ordersSection').style.display = 'none';
+            document.getElementById('neworderSection').style.display = 'none';
+            document.getElementById('documentsSection').style.display = 'none';
+            document.getElementById('supportSection').style.display = 'none';
+            
+            // Show selected
+            document.getElementById(section + 'Section').style.display = 'block';
+            
+            // Update menu
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.menu-item').classList.add('active');
+        }
+        
+        // Cart functions
+        function addToCart(productId) {
+            alert('Товар добавлен в корзину! Перейдите в раздел "Новый заказ"');
+        }
+        
+        function askQuestion(productId) {
+            toggleChat();
+            document.getElementById('chatInput').value = 'Расскажите подробнее о товаре #' + productId;
+        }
+        
+        function submitOrder() {
+            alert('✅ Заказ успешно оформлен! Номер заказа: #2024-001300');
+            showSection('orders');
+        }
+        
+        // Chat functions
+        let chatOpen = false;
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            document.getElementById('chatWidget').style.display = chatOpen ? 'block' : 'none';
+            document.getElementById('chatToggle').style.display = chatOpen ? 'none' : 'block';
+        }
+        
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            // Add user message
+            addChatMessage(text, 'user');
+            input.value = '';
+            
+            // Simulate bot response
+            setTimeout(() => {
+                const responses = [
+                    'Понял вас! Передаю информацию менеджеру...',
+                    'Сейчас проверю наличие на складе...',
+                    'Можете уточнить объём закупки?',
+                    'Для такого объёма можем предложить скидку 10%'
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage(randomResponse, 'bot');
+            }, 1000);
+        }
+        
+        function addChatMessage(text, sender) {
+            const body = document.getElementById('chatBody');
+            const msg = document.createElement('div');
+            msg.className = 'chat-message ' + sender;
+            msg.innerHTML = '<div class="chat-bubble">' + text + '</div>';
+            body.appendChild(msg);
+            body.scrollTop = body.scrollHeight;
+        }
+    </script>
+</body>
+</html>
